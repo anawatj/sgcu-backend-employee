@@ -1,0 +1,380 @@
+definitions:
+  auth.AuthRequest:
+    properties:
+      employeeId:
+        type: string
+      password:
+        type: string
+    type: object
+  auth.AuthResponse:
+    properties:
+      employeeId:
+        type: string
+      role:
+        type: string
+      token:
+        type: string
+    type: object
+  auth.AuthResponse2:
+    properties:
+      employeeId:
+        type: string
+      password:
+        type: string
+    type: object
+  auth.EmployeeResponse:
+    properties:
+      employeeId:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      salary:
+        type: number
+    type: object
+  employees.EmployeeRequest:
+    properties:
+      employeeId:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      salary:
+        type: number
+    type: object
+  employees.EmployeeResponse:
+    properties:
+      employeeId:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      salary:
+        type: number
+    type: object
+  employees.ListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/employees.EmployeeResponse'
+        type: array
+    type: object
+info:
+  contact:
+    email: support@somewhere.com
+    name: API Support
+    url: http://somewhere.com/support
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://somewhere.com/
+  title: Employees API
+  version: "1.0"
+paths:
+  /api/auth/changePassword:
+    put:
+      consumes:
+      - application/json
+      description: ChangePassword
+      parameters:
+      - description: ChangePassword Data
+        in: body
+        name: changePassword
+        required: true
+        schema:
+          $ref: '#/definitions/auth.AuthRequest'
+      responses:
+        "200":
+          description: Ok
+          schema:
+            $ref: '#/definitions/auth.AuthResponse2'
+        "400":
+          description: BadRequest
+          schema:
+            type: string
+        "401":
+          description: UnAuthorize
+          schema:
+            type: string
+        "404":
+          description: NotFound
+          schema:
+            type: string
+        "500":
+          description: InternalServerError
+          schema:
+            type: string
+      summary: ChangePassword
+  /api/auth/currentUser:
+    get:
+      consumes:
+      - application/json
+      description: GetCurrentUser
+      responses:
+        "200":
+          description: Ok
+          schema:
+            $ref: '#/definitions/auth.EmployeeResponse'
+        "400":
+          description: BadRequest
+          schema:
+            type: string
+        "401":
+          description: UnAuthorize
+          schema:
+            type: string
+        "404":
+          description: NotFound
+          schema:
+            type: string
+        "500":
+          description: InternalServerError
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get CurrentUser
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login to System
+      parameters:
+      - description: Login Data
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/auth.AuthRequest'
+      responses:
+        "200":
+          description: Ok
+          schema:
+            $ref: '#/definitions/auth.AuthResponse'
+        "400":
+          description: BadRequest
+          schema:
+            type: string
+        "401":
+          description: UnAuthorize
+          schema:
+            type: string
+        "404":
+          description: NotFound
+          schema:
+            type: string
+        "500":
+          description: InternalServerError
+          schema:
+            type: string
+      summary: Login
+  /api/employees:
+    get:
+      consumes:
+      - application/json
+      description: Getting all employee from database
+      parameters:
+      - description: search by firstName
+        in: query
+        name: firstName
+        type: string
+      - description: search by lastName
+        in: query
+        name: lastName
+        type: string
+      - description: search by role
+        in: query
+        name: role
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            $ref: '#/definitions/employees.ListResponse'
+        "401":
+          description: UnAuthorize
+          schema:
+            type: string
+        "404":
+          description: NotFound
+          schema:
+            type: string
+        "500":
+          description: InternalServerError
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: get all employee
+    post:
+      consumes:
+      - application/json
+      description: Adding new employee to database
+      parameters:
+      - description: Employee Data
+        in: body
+        name: employee
+        required: true
+        schema:
+          $ref: '#/definitions/employees.EmployeeRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/employees.ListResponse'
+        "400":
+          description: BadRequest
+          schema:
+            type: string
+        "401":
+          description: UnAuthorize
+          schema:
+            type: string
+        "404":
+          description: NotFound
+          schema:
+            type: string
+        "500":
+          description: InternalServerError
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: create employee
+  /api/employees/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete employee from database
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: string
+        "400":
+          description: BadRequest
+          schema:
+            type: string
+        "401":
+          description: UnAuthorize
+          schema:
+            type: string
+        "404":
+          description: NotFound
+          schema:
+            type: string
+        "500":
+          description: InternalServerError
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: delete employee
+    get:
+      consumes:
+      - application/json
+      description: getting employee by id from database
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Ok
+          schema:
+            $ref: '#/definitions/employees.ListResponse'
+        "400":
+          description: BadRequest
+          schema:
+            type: string
+        "401":
+          description: UnAuthorize
+          schema:
+            type: string
+        "404":
+          description: NotFound
+          schema:
+            type: string
+        "500":
+          description: InternalServerError
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: get employee by id
+    put:
+      consumes:
+      - application/json
+      description: update employee to database
+      parameters:
+      - description: Employee Data
+        in: body
+        name: employee
+        required: true
+        schema:
+          $ref: '#/definitions/employees.EmployeeRequest'
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Ok
+          schema:
+            $ref: '#/definitions/employees.ListResponse'
+        "400":
+          description: BadRequest
+          schema:
+            type: string
+        "401":
+          description: UnAuthorize
+          schema:
+            type: string
+        "404":
+          description: NotFound
+          schema:
+            type: string
+        "500":
+          description: InternalServerError
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: update employee
+schemes:
+- https
+- http
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
